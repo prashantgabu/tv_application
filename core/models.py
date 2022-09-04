@@ -10,7 +10,7 @@ class RemoteDevice(models.Model):
     lock = models.BooleanField(default=True)
     device = models.ForeignKey(FCMDevice, on_delete=models.CASCADE)
     note = models.TextField(default=DEFAULT_LOCK_NOTE, null=True)
-    mac_address = models.CharField(max_length=300, null=True, blank=True, verbose_name="MAC Address")
+    mac_address = models.CharField(max_length=300, null=True, blank=True, verbose_name="MAC Address", unique=True)
 
     def __str__(self):
         if self.device:
