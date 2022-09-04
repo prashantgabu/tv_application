@@ -6,11 +6,16 @@ from django.http import HttpResponse, Http404
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from fcm_django.models import FCMDevice
+from rest_framework import status
+from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from .models import RemoteDevice
 
 
 # Create your views here.
+
 
 @csrf_exempt
 def download_updates(request, *args, **kwargs):
@@ -116,3 +121,39 @@ def vvm_test(request, *args, **kwargs):
 @csrf_exempt
 def api_run(request, *args, **kwargs):
     return HttpResponse('Success!')
+
+
+class DeviceRegisterAPIView(APIView):
+    permission_classes = (AllowAny,)
+
+    def post(self, request):
+        data = request.data
+        device_id = data.get('device_id')
+        registration_id = data.get('registration_id')
+        device_type = data.get('type', 'android')
+        mac_address = data.get('mac_address')
+        name = data.get('name')
+        print(data)
+
+        if not device_id or not registration_id or not device_type or not mac_address:
+            return Response({"message": "Please pass valid data"},
+                            status=status.HTTP_200_OK)
+        device = FCMDevice.objects.filter(device_id=device_id).first()
+        if not device:
+            device = FCMDevice.objects.create(device_id=device_id, type=device_type,
+                                              registration_id=registration_id, name=name)
+        else:
+            device.registration_id = registration_id
+            device.type = device_type
+            device.name = name
+            device.save()
+
+        remote_device = RemoteDevice.objects.filter(device=device.id).first()
+        if not remote_device:
+            RemoteDevice.objects.create(device=device, mac_address=mac_address)
+        else:
+            remote_device.mac_address = mac_address
+            remote_device.save()
+
+        return Response({"message": "Device registered successfully"},
+                        status=status.HTTP_200_OK)

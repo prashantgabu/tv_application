@@ -8,7 +8,7 @@ DEFAULT_LOCK_NOTE = 'Your Service Is Expired.'
 
 class RemoteDevice(models.Model):
     lock = models.BooleanField(default=True)
-    device = models.ForeignKey(FCMDevice, on_delete=models.CASCADE)
+    device = models.OneToOneField(FCMDevice, on_delete=models.CASCADE, related_name="remote_device")
     note = models.TextField(default=DEFAULT_LOCK_NOTE, null=True)
     mac_address = models.CharField(max_length=300, null=True, blank=True, verbose_name="MAC Address", unique=True)
 
@@ -23,10 +23,8 @@ class RemoteDevice(models.Model):
     def save(self, *args, **kwargs):
         super(RemoteDevice, self).save(*args, **kwargs)
         if self.pk:
-            # existed
             pass
         else:
-            # new
             pass
         data = {
             "action": "lock",
@@ -35,4 +33,4 @@ class RemoteDevice(models.Model):
                 "note": self.note,
             }
         }
-        self.device.send_message(data={"data": json.dumps(data)})
+        # self.device.send_message(data={"data": json.dumps(data)})

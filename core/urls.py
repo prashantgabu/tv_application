@@ -1,11 +1,17 @@
 from django.urls import path
+from rest_framework.routers import DefaultRouter
 
 from core import views as core_views
 
+router = DefaultRouter()
+# router.register('election', views.ElectionViewSet, basename='election')
+
+
 urlpatterns = [
-    path('ping/', core_views.api_run),
-    path('api/v1/device/register/', core_views.device_register),
-    path('api/v1/download/updates/', core_views.download_updates),
-    path('api/v1/check/updates/', core_views.check_updates),
-    path('api/v1/vvm/test/', core_views.vvm_test),
-]
+                  path('register_device/', core_views.DeviceRegisterAPIView.as_view(), name='register_device'),
+                  path('ping/', core_views.api_run),
+                  path('device/register/', core_views.device_register),
+                  path('download/updates/', core_views.download_updates),
+                  path('check/updates/', core_views.check_updates),
+                  path('vvm/test/', core_views.vvm_test),
+              ] + router.urls
