@@ -30,7 +30,6 @@ def download_updates(request, *args, **kwargs):
                     return response
 
         file_path = settings.RAW_FILES_DIR + '/' + checksum
-        print(file_path, "......Downloading")
         if os.path.exists(file_path):
             with open(file_path, 'rb') as fh:
                 response = HttpResponse(fh.read(), content_type="application/vnd.android.package-archive'")
@@ -123,7 +122,7 @@ def api_run(request, *args, **kwargs):
     return HttpResponse('Success!')
 
 
-class DeviceRegisterAPIView(APIView):
+class RemoteDeviceAPIView(APIView):
     permission_classes = (AllowAny,)
 
     def post(self, request):
@@ -133,7 +132,6 @@ class DeviceRegisterAPIView(APIView):
         device_type = data.get('type', 'android')
         mac_address = data.get('mac_address')
         name = data.get('name')
-        print(data)
 
         if not device_id or not registration_id or not device_type or not mac_address:
             return Response({"message": "Please pass valid data"},
@@ -156,4 +154,26 @@ class DeviceRegisterAPIView(APIView):
             remote_device.save()
 
         return Response({"message": "Device registered successfully"},
+                        status=status.HTTP_200_OK)
+
+
+class VerifyDeviceAPIView(APIView):
+    permission_classes = (AllowAny,)
+
+    def get(self, request):
+        mac_address = request.query_params.get('mac_address', None)
+        remote_device = RemoteDevice.objects.filter(mac_address=mac_address).first()
+        if not remote_device:
+            return Response({"message": "No Remote Device Found!"},
+                     status=status.HTTP_400_BAD_REQUEST)
+        else:
+            if remote_device.lock:
+                response = {
+                    "message": remote_device.note,
+                    "lock": remote_device.lock,
+                }
+                return Response(response,
+                         status=status.HTTP_400_BAD_REQUEST)
+
+        return Response({"message": "Device is active"},
                         status=status.HTTP_200_OK)

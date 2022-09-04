@@ -8,7 +8,8 @@ router = DefaultRouter()
 
 
 urlpatterns = [
-                  path('register_device/', core_views.DeviceRegisterAPIView.as_view(), name='register_device'),
+                  path('remote_device/', core_views.RemoteDeviceAPIView.as_view(), name='remote_device'),
+                  path('verify_device/', core_views.VerifyDeviceAPIView.as_view(), name='verify_device'),
                   path('ping/', core_views.api_run),
                   path('device/register/', core_views.device_register),
                   path('download/updates/', core_views.download_updates),
