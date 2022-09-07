@@ -127,28 +127,29 @@ class RemoteDeviceAPIView(APIView):
 
     def post(self, request):
         data = request.data
-        device_id = data.get('device_id')
-        registration_id = data.get('registration_id')
+        # device_id = data.get('device_id')
+        # registration_id = data.get('registration_id')
         device_type = data.get('type', 'android')
         mac_address = data.get('mac_address')
-        name = data.get('name')
+        # name = data.get('name')
 
-        if not device_id or not registration_id or not device_type or not mac_address:
-            return Response({"message": "Please pass valid data"},
-                            status=status.HTTP_200_OK)
-        device = FCMDevice.objects.filter(device_id=device_id).first()
-        if not device:
-            device = FCMDevice.objects.create(device_id=device_id, type=device_type,
-                                              registration_id=registration_id, name=name)
-        else:
-            device.registration_id = registration_id
-            device.type = device_type
-            device.name = name
-            device.save()
+        if not mac_address:
+            return Response({"message": "MAC address is required"},
+                            status=status.HTTP_400_BAD_REQUEST)
+        # if device_id:
+        #     device = FCMDevice.objects.filter(device_id=device_id).first()
+        #     if not device:
+        #         device = FCMDevice.objects.create(device_id=device_id, type=device_type,
+        #                                           registration_id=registration_id, name=name)
+        #     else:
+        #         device.registration_id = registration_id
+        #         device.type = device_type
+        #         device.name = name
+        #         device.save()
 
-        remote_device = RemoteDevice.objects.filter(device=device.id).first()
+        remote_device = RemoteDevice.objects.filter(mac_address=mac_address).first()
         if not remote_device:
-            RemoteDevice.objects.create(device=device, mac_address=mac_address)
+            RemoteDevice.objects.create(mac_address=mac_address)
         else:
             remote_device.mac_address = mac_address
             remote_device.save()
@@ -165,7 +166,7 @@ class VerifyDeviceAPIView(APIView):
         remote_device = RemoteDevice.objects.filter(mac_address=mac_address).first()
         if not remote_device:
             return Response({"message": "No Remote Device Found!"},
-                     status=status.HTTP_400_BAD_REQUEST)
+                            status=status.HTTP_400_BAD_REQUEST)
         else:
             if remote_device.lock:
                 response = {
@@ -173,7 +174,7 @@ class VerifyDeviceAPIView(APIView):
                     "lock": remote_device.lock,
                 }
                 return Response(response,
-                         status=status.HTTP_400_BAD_REQUEST)
+                                status=status.HTTP_400_BAD_REQUEST)
 
         return Response({"message": "Device is active"},
                         status=status.HTTP_200_OK)
