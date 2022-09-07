@@ -166,7 +166,7 @@ class VerifyDeviceAPIView(APIView):
         remote_device = RemoteDevice.objects.filter(mac_address=mac_address).first()
         if not remote_device:
             return Response({"message": "No Remote Device Found!"},
-                            status=status.HTTP_400_BAD_REQUEST)
+                            status=status.HTTP_404_NOT_FOUND)
         else:
             if remote_device.lock:
                 response = {
