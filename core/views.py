@@ -1,9 +1,11 @@
 import os
 from http import HTTPStatus
+from time import timezone
 
 from django.conf import settings
 from django.http import HttpResponse, Http404
 from django.http import JsonResponse
+from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from fcm_django.models import FCMDevice
 from rest_framework import status
@@ -149,7 +151,7 @@ class RemoteDeviceAPIView(APIView):
 
         remote_device = RemoteDevice.objects.filter(mac_address=mac_address).first()
         if not remote_device:
-            RemoteDevice.objects.create(mac_address=mac_address)
+            RemoteDevice.objects.create(mac_address=mac_address, registration_date_time=timezone.now())
         else:
             remote_device.mac_address = mac_address
             remote_device.save()

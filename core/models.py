@@ -10,7 +10,9 @@ class RemoteDevice(models.Model):
     lock = models.BooleanField(default=False)
     mac_address = models.CharField(max_length=300, null=True, blank=True, verbose_name="MAC Address", unique=True)
     note = models.TextField(default=DEFAULT_LOCK_NOTE)
-    device = models.OneToOneField(FCMDevice, on_delete=models.SET_NULL, related_name="remote_device", null=True, blank=True)
+    registration_date_time = models.DateTimeField(null=True, blank=True)
+    device = models.OneToOneField(FCMDevice, on_delete=models.SET_NULL, related_name="remote_device", null=True,
+                                  blank=True)
 
     # def __str__(self):
     # if self.device:
@@ -35,4 +37,4 @@ class RemoteDevice(models.Model):
     #             "note": self.note,
     #         }
     #     }
-        # self.device.send_message(data={"data": json.dumps(data)})
+    # self.device.send_message(data={"data": json.dumps(data)})
