@@ -13,6 +13,7 @@ import os
 from pathlib import Path
 
 from dotenv import load_dotenv
+from firebase_admin import initialize_app
 
 load_dotenv()
 env = os.environ.get
@@ -138,26 +139,25 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-FCM_DJANGO_SETTINGS = {
-    # default: _('FCM Django')
-    "APP_VERBOSE_NAME": "Remote Box",
-    # Your firebase API KEY
-    "FCM_SERVER_KEY": "AAAA4bkV7pg:APA91bFIs40RjKjt5_M6VLZemwa69q90fsbP5iNT7yf5MJhP_P9-O-c8xVwqywk3Z-mu09Im6z2LdOGoecrd0hDN176cXpPMHuJyOrjj3L6ActT8F5llkFTvrc0TYGiYhKByxyGdHWDR",
-    # true if you want to have only one active device per registered user at a time
-    # default: False
-    "ONE_DEVICE_PER_USER": True,
-    # devices to which notifications cannot be sent,
-    # are deleted upon receiving error response from FCM
-    # default: False
-    "DELETE_INACTIVE_DEVICES": False,
-}
+# FCM_DJANGO_SETTINGS = {
+#     # default: _('FCM Django')
+#     "APP_VERBOSE_NAME": "Remote Box",
+#     # Your firebase API KEY
+#     "FCM_SERVER_KEY": "AAAA4bkV7pg:APA91bFIs40RjKjt5_M6VLZemwa69q90fsbP5iNT7yf5MJhP_P9-O-c8xVwqywk3Z-mu09Im6z2LdOGoecrd0hDN176cXpPMHuJyOrjj3L6ActT8F5llkFTvrc0TYGiYhKByxyGdHWDR",
+#     # true if you want to have only one active device per registered user at a time
+#     # default: False
+#     "ONE_DEVICE_PER_USER": True,
+#     # devices to which notifications cannot be sent,
+#     # are deleted upon receiving error response from FCM
+#     # default: False
+#     "DELETE_INACTIVE_DEVICES": False,
+# }
 
 RAW_FILES_DIR = str(BASE_DIR) + '/raw'
 LATEST_APK_INFO = {
     'checksum': '83ae46aa6ad49d22921dad0072d52349',
     'version': 3,
 }
-
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
@@ -176,3 +176,13 @@ REST_FRAMEWORK = {
     "DEFAULT_PAGINATION_CLASS": None,
     "TEST_REQUEST_DEFAULT_FORMAT": "json",
 }
+FIREBASE_APP = initialize_app()
+
+FCM_DJANGO_SETTINGS = {
+    # "APP_VERBOSE_NAME": "",
+    "ONE_DEVICE_PER_USER": True,
+    "DELETE_INACTIVE_DEVICES": False,
+    "UPDATE_ON_DUPLICATE_REG_ID": True,
+}
+
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 10

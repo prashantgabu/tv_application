@@ -1,6 +1,5 @@
 from django.db import models
 from fcm_django.models import FCMDevice
-import json
 
 # Create your models here.
 DEFAULT_LOCK_NOTE = 'Your Service Is Expired.'

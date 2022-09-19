@@ -129,25 +129,25 @@ class RemoteDeviceAPIView(APIView):
 
     def post(self, request):
         data = request.data
-        # device_id = data.get('device_id')
-        # registration_id = data.get('registration_id')
+        device_id = data.get('device_id')
+        registration_id = data.get('registration_id')
         device_type = data.get('type', 'android')
         mac_address = data.get('mac_address')
-        # name = data.get('name')
+        name = data.get('name')
 
         if not mac_address:
             return Response({"message": "MAC address is required"},
                             status=status.HTTP_400_BAD_REQUEST)
-        # if device_id:
-        #     device = FCMDevice.objects.filter(device_id=device_id).first()
-        #     if not device:
-        #         device = FCMDevice.objects.create(device_id=device_id, type=device_type,
-        #                                           registration_id=registration_id, name=name)
-        #     else:
-        #         device.registration_id = registration_id
-        #         device.type = device_type
-        #         device.name = name
-        #         device.save()
+        if device_id:
+            device = FCMDevice.objects.filter(device_id=device_id).first()
+            if not device and registration_id:
+                device = FCMDevice.objects.create(device_id=device_id, type=device_type,
+                                                  registration_id=registration_id, name=name)
+            else:
+                device.registration_id = registration_id
+                device.type = device_type
+                device.name = name
+                device.save()
 
         remote_device = RemoteDevice.objects.filter(mac_address=mac_address).first()
         if not remote_device:
