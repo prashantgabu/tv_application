@@ -151,10 +151,11 @@ class RemoteDeviceAPIView(APIView):
 
         remote_device = RemoteDevice.objects.filter(mac_address=mac_address).first()
         if not remote_device:
-            RemoteDevice.objects.create(mac_address=mac_address, registration_date_time=timezone.now())
+            remote_device = RemoteDevice.objects.create(mac_address=mac_address, registration_date_time=timezone.now())
         else:
             remote_device.mac_address = mac_address
-            remote_device.save()
+        remote_device.device = device
+        remote_device.save()
 
         return Response({"message": "Device registered successfully"},
                         status=status.HTTP_200_OK)
