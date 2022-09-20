@@ -134,6 +134,7 @@ class RemoteDeviceAPIView(APIView):
         device_type = data.get('type', 'android')
         mac_address = data.get('mac_address')
         name = data.get('name')
+        is_new_device = False
 
         if not mac_address:
             return Response({"message": "MAC address is required"},
@@ -141,6 +142,7 @@ class RemoteDeviceAPIView(APIView):
         if device_id:
             device = FCMDevice.objects.filter(device_id=device_id).first()
             if not device and registration_id:
+                is_new_device = True
                 device = FCMDevice.objects.create(device_id=device_id, type=device_type,
                                                   registration_id=registration_id, name=name)
             else:
@@ -154,6 +156,8 @@ class RemoteDeviceAPIView(APIView):
             remote_device = RemoteDevice.objects.create(mac_address=mac_address, registration_date_time=timezone.now())
         else:
             remote_device.mac_address = mac_address
+        if remote_device.device and is_new_device:
+            remote_device.device.delete()
         remote_device.device = device
         remote_device.save()
 
