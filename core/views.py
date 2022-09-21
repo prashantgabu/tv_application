@@ -135,6 +135,7 @@ class RemoteDeviceAPIView(APIView):
         mac_address = data.get('mac_address')
         name = data.get('name')
         is_new_device = False
+        device = None
 
         if not mac_address:
             return Response({"message": "MAC address is required"},
@@ -158,7 +159,8 @@ class RemoteDeviceAPIView(APIView):
             remote_device.mac_address = mac_address
         if remote_device.device and is_new_device:
             remote_device.device.delete()
-        remote_device.device = device
+        if device:
+            remote_device.device = device
         remote_device.save()
 
         return Response({"message": "Device registered successfully"},
