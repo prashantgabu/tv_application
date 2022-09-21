@@ -9,7 +9,7 @@ DEFAULT_LOCK_NOTE = 'Your Service Is Expired.'
 
 
 class RemoteDevice(LifecycleModelMixin, models.Model):
-    lock = models.BooleanField(default=False)
+    lock = models.BooleanField(default=True)
     mac_address = models.CharField(max_length=300, null=True, blank=True, verbose_name="MAC Address", unique=True)
     note = models.TextField(default=DEFAULT_LOCK_NOTE)
     registration_date_time = models.DateTimeField(null=True, blank=True)
