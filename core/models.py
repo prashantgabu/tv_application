@@ -8,6 +8,14 @@ from core.helpers import send_notification
 DEFAULT_LOCK_NOTE = 'Your Service Is Expired.'
 
 
+class BaseModel(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
+
+    class Meta:
+        abstract = True
+
+
 class RemoteDevice(LifecycleModelMixin, models.Model):
     lock = models.BooleanField(default=True)
     mac_address = models.CharField(max_length=300, null=True, blank=True, verbose_name="MAC Address", unique=True)
@@ -44,3 +52,15 @@ class RemoteDevice(LifecycleModelMixin, models.Model):
     #         }
     #     }
     # self.device.send_message(data={"data": json.dumps(data)})
+
+
+class AppVersion(LifecycleModelMixin, BaseModel):
+    version_no = models.CharField(max_length=300, verbose_name="App Version No.", unique=True)
+    app_file = models.FileField(upload_to="app_versions/")
+    mandatory_update = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.version_no
+
+    class Meta:
+        ordering = ['-id']

@@ -13,7 +13,8 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .models import RemoteDevice
+from .models import RemoteDevice, AppVersion
+from .serializers import AppVersionSerializer
 
 
 # Create your views here.
@@ -186,4 +187,23 @@ class VerifyDeviceAPIView(APIView):
                                 status=status.HTTP_400_BAD_REQUEST)
 
         return Response({"message": "Device is active"},
+                        status=status.HTTP_200_OK)
+
+
+class CheckVersionAPIView(APIView):
+    permission_classes = (AllowAny,)
+
+    def get(self, request):
+        version_no = request.query_params.get('version_no', None)
+        response = {
+            "is_latest_version": True
+        }
+        app_version = AppVersion.objects.exclude(version_no=version_no).first()
+        if app_version and version_no and app_version.version_no != version_no:
+            response = AppVersionSerializer(instance=app_version).data
+            response.update(is_latest_version=False)
+            return Response(response,
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        return Response(response,
                         status=status.HTTP_200_OK)
