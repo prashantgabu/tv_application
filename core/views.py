@@ -205,7 +205,7 @@ class CheckVersionAPIView(APIView):
             return Response({"message": "Version Not Found"},
                             status=status.HTTP_400_BAD_REQUEST)
         if latest_app_version and current_app_version and latest_app_version != current_app_version and latest_app_version.id > current_app_version.id:
-            response = AppVersionSerializer(instance=latest_app_version).data
+            response = AppVersionSerializer(instance=latest_app_version, context={"request": request}).data
             response.update(is_latest_version=False)
             return Response(response,
                             status=status.HTTP_400_BAD_REQUEST)
